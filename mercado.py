@@ -33,8 +33,8 @@ class JogoSupermercado:
         # --- Variáveis de Estado do Jogo ---
         self.carrinho_jogador = []  # Lista para armazenar os itens (nome, preço) do jogador.
         self.total_jogador = 0.0  # Soma dos preços no carrinho do jogador.
-        self.carrinho_agente = []  # Lista para os itens do agente (IA).
-        self.total_agente = 0.0  # Soma dos preços no carrinho do agente.
+        self.carrinho_robo = []  # Lista para os itens do robo (IA).
+        self.total_robo = 0.0  # Soma dos preços no carrinho do robo.
         self.jogo_ativo = False  # Flag para controlar se o jogo está em andamento.
         
         # --- Controle de Turno ---
@@ -76,7 +76,7 @@ class JogoSupermercado:
 
         # Título principal da tela.
         label_titulo = tk.Label(frame_bem_vindo, text="Olá, seja bem-vindo!",
-                                  font=("Arial", 48, "bold"), fg="white", bg="#ff6b00") 
+                                font=("Arial", 48, "bold"), fg="white", bg="#ff6b00") 
         label_titulo.pack(pady=(0, 40)) 
 
         # Frame para os desenhos dos carrinhos de compras.
@@ -89,7 +89,7 @@ class JogoSupermercado:
         self.desenhar_carrinho_compras(frame_carrinhos, 2)
 
         # Texto explicando as regras do jogo por turnos.
-        texto_mensagem = "O jogo agora é por turnos! Você adiciona um item, depois o agente.\nO estoque é compartilhado. Use sua estratégia para vencer!"
+        texto_mensagem = "O jogo agora é por turnos! Você adiciona um item, depois o robo.\nO estoque é compartilhado. Use sua estratégia para vencer!"
         label_mensagem = tk.Label(frame_bem_vindo, text=texto_mensagem,
                                   font=("Arial", 16), fg="white", bg="#ff6b00", 
                                   justify="center")
@@ -99,27 +99,27 @@ class JogoSupermercado:
         frame_algoritmo = tk.Frame(frame_bem_vindo, bg="#ff6b00")
         frame_algoritmo.pack(pady=(0, 40)) 
 
-        tk.Label(frame_algoritmo, text="Escolha o algoritmo do agente:",
+        tk.Label(frame_algoritmo, text="Escolha o algoritmo do robo:",
                  font=("Arial", 18, "bold"), fg="white", bg="#ff6b00").pack() 
 
         # Variável para armazenar a escolha do algoritmo (A* ou Gulosa).
         self.variavel_algoritmo = tk.StringVar(value="A*") # Padrão é A*.
         tk.Radiobutton(frame_algoritmo, text="Algoritmo A*", variable=self.variavel_algoritmo,
-                                  value="A*", font=("Arial", 16), fg="white", bg="#ff6b00", 
-                                  selectcolor="#ff6b00").pack()
+                                      value="A*", font=("Arial", 16), fg="white", bg="#ff6b00", 
+                                      selectcolor="#ff6b00").pack()
         tk.Radiobutton(frame_algoritmo, text="Busca Gulosa", variable=self.variavel_algoritmo,
-                                  value="Gulosa", font=("Arial", 16), fg="white", bg="#ff6b00", 
-                                  selectcolor="#ff6b00").pack()
+                                      value="Gulosa", font=("Arial", 16), fg="white", bg="#ff6b00", 
+                                      selectcolor="#ff6b00").pack()
 
         # Botão para começar o jogo.
         botao_iniciar = tk.Button(frame_bem_vindo, text="INICIAR JOGO",
-                                    font=("Arial", 26, "bold"), bg="white", fg="#ff6b00", 
-                                    relief="flat", padx=40, pady=20, 
-                                    command=self.inicializar_jogo) # Chama a função que prepara o jogo.
+                                  font=("Arial", 26, "bold"), bg="white", fg="#ff6b00", 
+                                  relief="flat", padx=40, pady=20, 
+                                  command=self.inicializar_jogo) # Chama a função que prepara o jogo.
         botao_iniciar.pack(pady=(0, 40)) 
 
         label_rodape = tk.Label(frame_bem_vindo, text="Clique em 'INICIAR JOGO' para começar",
-                                     font=("Arial", 14), fg="white", bg="#ff6b00") 
+                                      font=("Arial", 14), fg="white", bg="#ff6b00") 
         label_rodape.pack()
 
     # Função auxiliar para desenhar carrinhos de compras decorativos na tela de boas-vindas.
@@ -168,7 +168,7 @@ class JogoSupermercado:
         # Desenha as partes do carrinho.
         cesto_y_fim = y0 + carrinho_h * 0.8
         self.canvas_carrinho_vazio.create_rectangle(x0, y0, x0 + carrinho_w, cesto_y_fim,
-                                                      fill=cor_cesto, outline=cor_contorno, width=2)
+                                                  fill=cor_cesto, outline=cor_contorno, width=2)
         # Linhas decorativas no cesto.
         for i in range(1, 4):
             self.canvas_carrinho_vazio.create_line(x0, y0 + i * (carrinho_h * 0.8) / 4,
@@ -203,10 +203,10 @@ class JogoSupermercado:
         listbox_height = (cesto_y_fim - y0) - (padding * 2)
         
         self.canvas_carrinho_vazio.create_window(listbox_x, listbox_y,
-                                               anchor="nw",
-                                               window=self.display_carrinho_jogador,
-                                               width=max(10, listbox_width),
-                                               height=max(10, listbox_height))
+                                                 anchor="nw",
+                                                 window=self.display_carrinho_jogador,
+                                                 width=max(10, listbox_width),
+                                                 height=max(10, listbox_height))
 
     # Função principal que configura a tela do jogo e reinicia as variáveis.
     def inicializar_jogo(self):
@@ -222,8 +222,8 @@ class JogoSupermercado:
         self.valor_alvo = round(random.uniform(25.0, 70.0), 2) # Sorteia um novo valor-alvo.
         self.carrinho_jogador = []
         self.total_jogador = 0.0
-        self.carrinho_agente = []
-        self.total_agente = 0.0
+        self.carrinho_robo = []
+        self.total_robo = 0.0
         
         # Base de dados de produtos, separados por departamento.
         produtos_base = {
@@ -265,7 +265,7 @@ class JogoSupermercado:
         tk.Label(frame_cabecalho, text="Mais por Menos",
                  font=("Arial", 36, "bold"), fg="white", bg="#ff6b00").pack(pady=25) 
 
-        # Frame principal que conterá as 3 colunas (Jogador, Produtos, Agente).
+        # Frame principal que conterá as 3 colunas (Jogador, Produtos, Robo).
         frame_principal = tk.Frame(self.master, bg="#f5f5f5")
         frame_principal.pack(fill="both", expand=True, padx=25, pady=25)
 
@@ -277,7 +277,7 @@ class JogoSupermercado:
 
         # --- Coluna do Jogador (Esquerda) ---
         frame_jogador = tk.LabelFrame(frame_principal, text="👤 JOGADOR",
-                                       font=("Arial", 18, "bold"), bg="#f5f5f5") 
+                                      font=("Arial", 18, "bold"), bg="#f5f5f5") 
         frame_jogador.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
 
         frame_alvo = tk.Frame(frame_jogador, bg="#f5f5f5")
@@ -285,12 +285,12 @@ class JogoSupermercado:
         
         # Mostra o valor-alvo da rodada.
         label_valor_alvo = tk.Label(frame_alvo, text=f"🎯 VALOR-ALVO: R$ {self.valor_alvo:.2f}",
-                                      font=("Arial", 18, "bold"), bg="#f5f5f5") 
+                                  font=("Arial", 18, "bold"), bg="#f5f5f5") 
         label_valor_alvo.pack()
 
         # Mostra o total atual do carrinho do jogador.
         self.label_total_jogador = tk.Label(frame_alvo, text=f"💰 SEU TOTAL: R$ {self.total_jogador:.2f}",
-                                              font=("Arial", 17), bg="#f5f5f5") 
+                                            font=("Arial", 17), bg="#f5f5f5") 
         self.label_total_jogador.pack(pady=8) 
 
         frame_saldo = tk.Frame(frame_alvo, bg="#f5f5f5")
@@ -299,7 +299,7 @@ class JogoSupermercado:
         # Mostra quanto dinheiro o jogador ainda tem para gastar.
         saldo_restante = self.valor_alvo - self.total_jogador
         self.label_saldo_restante = tk.Label(frame_saldo, text=f"SALDO: R$ {saldo_restante:.2f}",
-                                               font=("Arial", 18, "bold"), bg="#f5f5f5", fg="#17a2b8") 
+                                             font=("Arial", 18, "bold"), bg="#f5f5f5", fg="#17a2b8") 
         self.label_saldo_restante.pack(side="left", expand=True)
         
         # Botão para ouvir o saldo em voz alta.
@@ -310,7 +310,7 @@ class JogoSupermercado:
 
         # Frame para exibir o carrinho do jogador.
         self.frame_carrinho_jogador = tk.LabelFrame(frame_jogador, text="Seu Carrinho",
-                                                      font=("Arial", 15, "bold"), bg="#f5f5f5") 
+                                                    font=("Arial", 15, "bold"), bg="#f5f5f5") 
         self.frame_carrinho_jogador.pack(fill="both", expand=True, pady=15)
 
         # Canvas onde o desenho do carrinho é feito.
@@ -336,8 +336,8 @@ class JogoSupermercado:
 
         # Botão para o jogador finalizar sua compra (terminar a rodada).
         self.botao_finalizar_jogador = tk.Button(frame_botoes_jogador, text="Finalizar Compra",
-                                                   font=("Arial", 15, "bold"), bg="#27ae60", fg="white", 
-                                                   command=self.finalizar_compra, pady=8)
+                                                 font=("Arial", 15, "bold"), bg="#27ae60", fg="white", 
+                                                 command=self.finalizar_compra, pady=8)
         self.botao_finalizar_jogador.pack(side="right", fill="x", expand=True, padx=10) 
         
         # --- Coluna do Meio (Produtos) ---
@@ -346,7 +346,7 @@ class JogoSupermercado:
 
         # Frame com botões de rádio para filtrar por departamento.
         frame_depto = tk.LabelFrame(frame_meio, text="Departamentos",
-                                      font=("Arial", 16, "bold"), bg="#f5f5f5")
+                                    font=("Arial", 16, "bold"), bg="#f5f5f5")
         frame_depto.pack(fill="x", pady=(0, 15))
 
         departamentos = list(self.produtos_com_estoque.keys())
@@ -366,8 +366,8 @@ class JogoSupermercado:
 
         # Botão do microfone para iniciar o reconhecimento de voz.
         self.botao_microfone = tk.Button(frame_voz, text="🎤", font=("Arial", 25), 
-                                       command=self.iniciar_escuta_produto,
-                                       bg="#8e44ad", fg="white", relief="flat", width=4)
+                                         command=self.iniciar_escuta_produto,
+                                         bg="#8e44ad", fg="white", relief="flat", width=4)
         self.botao_microfone.pack(pady=5)
 
         # Frame que conterá a lista rolável de produtos.
@@ -386,53 +386,53 @@ class JogoSupermercado:
         self.canvas_produtos.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
         
-        # --- Coluna do Agente (Direita) ---
-        frame_agente = tk.LabelFrame(frame_principal, text="🤖 AGENTE",
+        # --- Coluna do Robo (Direita) ---
+        frame_robo = tk.LabelFrame(frame_principal, text="🤖 ROBO",
                                       font=("Arial", 18, "bold"), bg="#f5f5f5") 
-        frame_agente.grid(row=0, column=2, sticky="nsew", padx=(10, 0))
+        frame_robo.grid(row=0, column=2, sticky="nsew", padx=(10, 0))
 
-        frame_info_agente = tk.Frame(frame_agente, bg="#f5f5f5")
-        frame_info_agente.pack(fill="x", pady=15)
+        frame_info_robo = tk.Frame(frame_robo, bg="#f5f5f5")
+        frame_info_robo.pack(fill="x", pady=15)
 
-        label_valor_alvo_agente = tk.Label(frame_info_agente, text=f"🎯 VALOR-ALVO: R$ {self.valor_alvo:.2f}",
+        label_valor_alvo_robo = tk.Label(frame_info_robo, text=f"🎯 VALOR-ALVO: R$ {self.valor_alvo:.2f}",
                                             font=("Arial", 18, "bold"), bg="#f5f5f5")
-        label_valor_alvo_agente.pack()
+        label_valor_alvo_robo.pack()
 
-        self.label_total_agente = tk.Label(frame_info_agente, text=f"💰 TOTAL AGENTE: R$ {self.total_agente:.2f}",
-                                             font=("Arial", 17), bg="#f5f5f5") 
-        self.label_total_agente.pack(pady=8)
+        self.label_total_robo = tk.Label(frame_info_robo, text=f"💰 TOTAL ROBO: R$ {self.total_robo:.2f}",
+                                            font=("Arial", 17), bg="#f5f5f5") 
+        self.label_total_robo.pack(pady=8)
         
-        frame_saldo_agente = tk.Frame(frame_info_agente, bg="#f5f5f5")
-        frame_saldo_agente.pack(fill="x", pady=(15, 0), padx=20)
+        frame_saldo_robo = tk.Frame(frame_info_robo, bg="#f5f5f5")
+        frame_saldo_robo.pack(fill="x", pady=(15, 0), padx=20)
 
-        saldo_restante_agente = self.valor_alvo - self.total_agente
-        self.label_saldo_restante_agente = tk.Label(frame_saldo_agente, text=f"SALDO: R$ {saldo_restante_agente:.2f}",
+        saldo_restante_robo = self.valor_alvo - self.total_robo
+        self.label_saldo_restante_robo = tk.Label(frame_saldo_robo, text=f"SALDO: R$ {saldo_restante_robo:.2f}",
                                                       font=("Arial", 18, "bold"), bg="#f5f5f5", fg="#17a2b8")
-        self.label_saldo_restante_agente.pack(side="left", expand=True)
+        self.label_saldo_restante_robo.pack(side="left", expand=True)
 
-        self.botao_ouvir_saldo_agente = tk.Button(frame_saldo_agente, text="🔊 Ouvir Saldo",
-                                                  font=("Arial", 14), bg="#17a2b8", fg="white", relief="flat",
-                                                  command=self.falar_saldo_restante_agente, padx=15, pady=5)
-        self.botao_ouvir_saldo_agente.pack(side="right", expand=True)
+        self.botao_ouvir_saldo_robo = tk.Button(frame_saldo_robo, text="🔊 Ouvir Saldo",
+                                                    font=("Arial", 14), bg="#17a2b8", fg="white", relief="flat",
+                                                    command=self.falar_saldo_restante_robo, padx=15, pady=5)
+        self.botao_ouvir_saldo_robo.pack(side="right", expand=True)
 
-        # Mostra qual algoritmo o agente está usando.
-        self.label_algoritmo_agente = tk.Label(frame_info_agente, text=f"Algoritmo: {self.variavel_algoritmo.get()}",
-                                                 font=("Arial", 17), bg="#f5f5f5") 
-        self.label_algoritmo_agente.pack(pady=(20, 0))
+        # Mostra qual algoritmo o robo está usando.
+        self.label_algoritmo_robo = tk.Label(frame_info_robo, text=f"Algoritmo: {self.variavel_algoritmo.get()}",
+                                                font=("Arial", 17), bg="#f5f5f5") 
+        self.label_algoritmo_robo.pack(pady=(20, 0))
 
         # Label de status para indicar de quem é o turno.
-        self.label_agente_status = tk.Label(frame_info_agente, text="É a sua vez de jogar!",
+        self.label_robo_status = tk.Label(frame_info_robo, text="É a sua vez de jogar!",
                                               font=("Arial", 15, "bold"), bg="#f5f5f5", fg="#27ae60") 
-        self.label_agente_status.pack()
+        self.label_robo_status.pack()
         
-        frame_carrinho_agente = tk.LabelFrame(frame_agente, text="Carrinho do Agente",
-                                               font=("Arial", 15, "bold"), bg="#f5f5f5") 
-        frame_carrinho_agente.pack(fill="both", expand=True, pady=15)
+        frame_carrinho_robo = tk.LabelFrame(frame_robo, text="Carrinho do Robo",
+                                                font=("Arial", 15, "bold"), bg="#f5f5f5") 
+        frame_carrinho_robo.pack(fill="both", expand=True, pady=15)
 
-        # Listbox para mostrar os itens no carrinho do agente.
-        self.display_carrinho_agente = tk.Listbox(frame_carrinho_agente, font=("Arial", 14), 
-                                                bg="white", selectbackground="#3498db")
-        self.display_carrinho_agente.pack(fill="both", expand=True, padx=10, pady=10)
+        # Listbox para mostrar os itens no carrinho do robo.
+        self.display_carrinho_robo = tk.Listbox(frame_carrinho_robo, font=("Arial", 14), 
+                                                  bg="white", selectbackground="#3498db")
+        self.display_carrinho_robo.pack(fill="both", expand=True, padx=10, pady=10)
         
         # Frame para o botão de "Nova Rodada".
         frame_novo_jogo = tk.Frame(self.master, bg="#f5f5f5")
@@ -462,25 +462,25 @@ class JogoSupermercado:
             elif state == tk.DISABLED:
                 botao.config(state=tk.DISABLED)
 
-    # Lógica para passar o turno do jogador para o agente.
-    def _passar_turno_para_agente(self):
+    # Lógica para passar o turno do jogador para o robo.
+    def _passar_turno_para_robo(self):
         if not self.jogo_ativo:
             return
             
         self.turno_do_jogador = False
         self._set_player_controls_state(tk.DISABLED) # Desabilita controles do jogador.
-        self.label_agente_status.config(text="🤔 Agente pensando...", fg="#e67e22")
-        # Espera 1 segundo (1000 ms) antes de executar o turno do agente, para dar um efeito de "pensamento".
-        self.master.after(1000, self.executar_turno_agente)
+        self.label_robo_status.config(text="🤔 Robo pensando...", fg="#e67e22")
+        # Espera 1 segundo (1000 ms) antes de executar o turno do robo, para dar um efeito de "pensamento".
+        self.master.after(1000, self.executar_turno_robo)
     
-    # Lógica para passar o turno do agente de volta para o jogador.
+    # Lógica para passar o turno do robo de volta para o jogador.
     def _passar_turno_para_jogador(self):
         if not self.jogo_ativo:
             return
 
         self.turno_do_jogador = True
         self._set_player_controls_state(tk.NORMAL) # Habilita os controles do jogador.
-        self.label_agente_status.config(text="É a sua vez de jogar!", fg="#27ae60")
+        self.label_robo_status.config(text="É a sua vez de jogar!", fg="#27ae60")
 
 
     # Inicia o processo de escuta do comando de voz em uma thread separada para não travar a interface.
@@ -497,7 +497,6 @@ class JogoSupermercado:
     def _find_best_product_match(self, spoken_text):
         todos_produtos = self.produtos_com_estoque["Todos"]
         product_names = list(todos_produtos.keys())
-        
         # Cria um dicionário que mapeia nomes processados para nomes originais.
         processed_product_names = {self._preprocess_text(name): name for name in product_names}
         # Encontra a melhor correspondência.
@@ -621,13 +620,13 @@ class JogoSupermercado:
         # Usa uma thread para falar, evitando que a interface congele.
         threading.Thread(target=self.falar_texto, args=(texto_saldo,), daemon=True).start()
 
-    # Converte o saldo do agente em texto e o fala.
-    def falar_saldo_restante_agente(self):
+    # Converte o saldo do robo em texto e o fala.
+    def falar_saldo_restante_robo(self):
         if not self.jogo_ativo: return
-        saldo = self.valor_alvo - self.total_agente
+        saldo = self.valor_alvo - self.total_robo
         reais = int(saldo)
         centavos = int(round((saldo - reais) * 100))
-        texto_saldo = f"O saldo restante do agente é de {reais} reais"
+        texto_saldo = f"O saldo restante do robo é de {reais} reais"
         texto_saldo += f" e {centavos} centavos." if centavos > 0 else "."
         threading.Thread(target=self.falar_texto, args=(texto_saldo,), daemon=True).start()
 
@@ -650,26 +649,26 @@ class JogoSupermercado:
             
             # Cria um card para cada produto.
             frame_produto = tk.Frame(self.frame_rolavel_produtos, bd=1, relief="solid",
-                                     bg="white", padx=15, pady=15)
+                                  bg="white", padx=15, pady=15)
             frame_produto.grid(row=linha, column=coluna, padx=12, pady=12, sticky="nsew") 
             
             label_nome = tk.Label(frame_produto, text=nome_produto_exibicao, font=("Arial", 12), 
-                                  bg="white", wraplength=180, justify="left")
+                                bg="white", wraplength=180, justify="left")
             label_nome.pack(anchor="w", pady=(0, 5))
 
             label_preco = tk.Label(frame_produto, text=f"R${preco:.2f}", font=("Arial", 16, "bold"), 
-                                   fg="#e74c3c", bg="white")
+                                 fg="#e74c3c", bg="white")
             label_preco.pack(anchor="w", pady=(0, 10))
             
             label_estoque = tk.Label(frame_produto, text=f"Estoque: {estoque}", font=("Arial", 11, "italic"),
-                                     fg="#555", bg="white")
+                                   fg="#555", bg="white")
             label_estoque.pack(anchor="w", pady=(0, 10))
 
             # Botão para adicionar o produto ao carrinho.
             botao_adicionar = tk.Button(frame_produto, font=("Arial", 12, "bold"), fg="white", 
-                                        relief="flat", cursor="hand2", pady=5, 
-                                        # A função lambda é usada para passar o nome do produto correto para a função.
-                                        command=lambda p=produto: self.adicionar_ao_carrinho_jogador(p))
+                                       relief="flat", cursor="hand2", pady=5, 
+                                       # A função lambda é usada para passar o nome do produto correto para a função.
+                                       command=lambda p=produto: self.adicionar_ao_carrinho_jogador(p))
             
             # Muda a aparência do botão com base no estoque.
             if estoque > 0:
@@ -728,7 +727,7 @@ class JogoSupermercado:
                 messagebox.showinfo("Parabéns!", "🎉 Você atingiu o valor exato!")
                 self.finalizar_compra()
             else:
-                self._passar_turno_para_agente() # Passa o turno.
+                self._passar_turno_para_robo() # Passa o turno.
         else:
             messagebox.showwarning("Orçamento Excedido", f"Não é possível adicionar '{nome_produto}'.\nSeu saldo restante é de R$ {self.valor_alvo - self.total_jogador:.2f}.")
 
@@ -768,77 +767,139 @@ class JogoSupermercado:
             texto_para_falar = f"{item_removido[0]} removido"
             threading.Thread(target=self.falar_texto, args=(texto_para_falar,), daemon=True).start()
             
-            self._passar_turno_para_agente() # Passa o turno.
-
-    # Lógica do turno do agente (IA).
-    def executar_turno_agente(self):
+    # Lógica do turno do robo (IA).
+    def executar_turno_robo(self):
         # Encontra o melhor item para adicionar com base no algoritmo escolhido.
         melhor_item = self._encontrar_melhor_proximo_item()
         
         if melhor_item:
             nome_produto, preco_produto = melhor_item
             
-            # Adiciona o item ao carrinho do agente.
-            self.carrinho_agente.append((nome_produto, preco_produto))
-            self.total_agente += preco_produto
+            # Adiciona o item ao carrinho do robo.
+            self.carrinho_robo.append((nome_produto, preco_produto))
+            self.total_robo += preco_produto
             self.produtos_com_estoque["Todos"][nome_produto]["estoque"] -= 1 # Remove do estoque compartilhado.
             
-            self.atualizar_display_agente() # Atualiza a interface do agente.
+            self.atualizar_display_robo() # Atualiza a interface do robo.
         else:
-            # Se não encontrou nenhum item válido, o agente passa a vez.
-            print("Agente passou a vez.")
+            # Se não encontrou nenhum item válido, o robo passa a vez.
+            print("Robo passou a vez.")
         
         self.exibir_produtos() # Atualiza a exibição de produtos para refletir a mudança no estoque.
         
         self._passar_turno_para_jogador() # Devolve o turno para o jogador.
-
-
-    # Estratégia do agente para escolher o próximo item.
-    def _encontrar_melhor_proximo_item(self):
-        # Filtra os produtos que estão em estoque e não ultrapassam o valor-alvo.
-        produtos_disponiveis = []
-        for nome, dados in self.produtos_com_estoque["Todos"].items():
-            if dados["estoque"] > 0 and self.total_agente + dados["preco"] <= self.valor_alvo:
-                produtos_disponiveis.append((nome, dados["preco"]))
-        
-        if not produtos_disponiveis:
-            return None 
-
-        algoritmo = self.variavel_algoritmo.get()
-        
-        # Algoritmo de Busca Gulosa: escolhe o item mais caro disponível.
-        if algoritmo == "Gulosa":
-            return sorted(produtos_disponiveis, key=lambda x: x[1], reverse=True)[0]
-        # Algoritmo A*: usa uma heurística para escolher o item que mais se aproxima do valor-alvo.
-        else: # A*
-            melhor_item = None
-            melhor_heuristica = float('inf')
-            
-            for produto, preco in produtos_disponiveis:
-                # A heurística é a distância do novo total até o valor-alvo.
-                h = self.heuristica(self.total_agente + preco)
-                if h < melhor_heuristica:
-                    melhor_heuristica = h
-                    melhor_item = (produto, preco)
-                # Como critério de desempate, se a heurística for a mesma, escolhe o item mais caro.
-                elif h == melhor_heuristica and melhor_item and preco > melhor_item[1]:
-                    melhor_item = (produto, preco)
-            
-            return melhor_item
-
-    # Atualiza a interface do agente (carrinho, total, saldo).
-    def atualizar_display_agente(self):
-        self.display_carrinho_agente.delete(0, tk.END)
-        for produto, preco in self.carrinho_agente:
-            self.display_carrinho_agente.insert(tk.END, f"{produto} - R$ {preco:.2f}")
-            
-        self.label_total_agente.config(text=f"💰 TOTAL AGENTE: R$ {self.total_agente:.2f}")
-        saldo_restante_agente = self.valor_alvo - self.total_agente
-        self.label_saldo_restante_agente.config(text=f"SALDO: R$ {saldo_restante_agente:.2f}")
-
+    
     # Função heurística para o algoritmo A*. Calcula a diferença absoluta até o valor-alvo.
     def heuristica(self, total_atual):
         return abs(self.valor_alvo - total_atual)
+
+    # Implementação do algoritmo A*
+    def busca_a_estrela(self):
+        # 1. Cria uma lista de produtos disponíveis com base no estoque atual.
+        produtos_disponiveis = []
+        for nome, dados in self.produtos_com_estoque["Todos"].items():
+            if dados["estoque"] > 0:
+                produtos_disponiveis.append((nome, dados["preco"]))
+        
+        # 2. Inicializa a fronteira (fila de prioridade) e o conjunto de visitados.
+        fronteira = []
+        visitados = set()
+
+        # 3. O estado inicial é o carrinho atual do robo.
+        h_inicial = self.heuristica(self.total_robo)
+        g_inicial = len(self.carrinho_robo)
+        f_inicial = g_inicial + h_inicial
+
+        # A fronteira armazena: (f_score, h_score, total_monetario, caminho_do_carrinho)
+        heapq.heappush(fronteira, (f_inicial, h_inicial, self.total_robo, self.carrinho_robo.copy()))
+        
+        # Guarda a melhor solução encontrada até agora como fallback.
+        melhor_solucao = (self.carrinho_robo.copy(), self.total_robo)
+        melhor_pontuacao_h = h_inicial
+        
+        passos_limite = 2000 # Limite de segurança para evitar loops infinitos.
+        passo = 0
+        while fronteira and passo < passos_limite:
+            passo += 1
+            _, h_atual, total_atual, carrinho_atual = heapq.heappop(fronteira)
+            
+            # Cria um identificador único para o estado atual para o conjunto de visitados.
+            estado_atual = (round(total_atual, 2), tuple(sorted(p[0] for p in carrinho_atual)))
+            if estado_atual in visitados:
+                continue
+            visitados.add(estado_atual)
+
+            # Se o estado atual é o mais próximo do alvo que já vimos, salvamos.
+            if h_atual < melhor_pontuacao_h:
+                melhor_solucao = (carrinho_atual.copy(), total_atual)
+                melhor_pontuacao_h = h_atual
+
+            # Se encontramos a solução exata, retornamos.
+            if abs(total_atual - self.valor_alvo) < 0.01:
+                return carrinho_atual, round(total_atual, 2)
+            
+            # 4. Expande para os próximos estados possíveis.
+            itens_no_carrinho = {p[0] for p in carrinho_atual}
+            for produto, preco in produtos_disponiveis:
+                novo_total = total_atual + preco
+                if novo_total <= self.valor_alvo and produto not in itens_no_carrinho:
+                    novo_carrinho = carrinho_atual + [(produto, preco)]
+                    
+                    # Calcula os custos para o novo estado.
+                    g_novo = len(novo_carrinho)
+                    h_novo = self.heuristica(novo_total)
+                    f_novo = g_novo + h_novo
+                    
+                    heapq.heappush(fronteira, (f_novo, h_novo, novo_total, novo_carrinho))
+                    
+        # Se o loop terminar, retorna a melhor solução parcial encontrada.
+        return melhor_solucao[0], round(melhor_solucao[1], 2)
+
+    # Estratégia do robo para escolher o próximo item.
+    def _encontrar_melhor_proximo_item(self):
+        algoritmo = self.variavel_algoritmo.get()
+        
+        # --- Lógica da Busca Gulosa ---
+        if algoritmo == "Gulosa":
+            produtos_disponiveis = []
+            for nome, dados in self.produtos_com_estoque["Todos"].items():
+                if dados["estoque"] > 0 and self.total_robo + dados["preco"] <= self.valor_alvo:
+                    produtos_disponiveis.append((nome, dados["preco"]))
+            
+            if not produtos_disponiveis:
+                return None 
+            # Retorna o item mais caro que cabe no orçamento.
+            return sorted(produtos_disponiveis, key=lambda x: x[1], reverse=True)[0]
+        
+        # --- Lógica do Algoritmo A* ---
+        else: # A*
+            # 1. Roda a busca A* para encontrar o carrinho final ideal.
+            carrinho_ideal, _ = self.busca_a_estrela()
+            
+            if not carrinho_ideal:
+                return None
+
+            # 2. Descobre qual o próximo item do caminho ideal que o robo deve pegar.
+            itens_atuais_robo = {item[0] for item in self.carrinho_robo}
+            
+            for item_do_caminho_ideal in carrinho_ideal:
+                if item_do_caminho_ideal[0] not in itens_atuais_robo:
+                    # Verifica se o item ainda está em estoque (pode ter sido pego pelo jogador).
+                    dados_produto = self.produtos_com_estoque["Todos"].get(item_do_caminho_ideal[0])
+                    if dados_produto and dados_produto["estoque"] > 0:
+                        return item_do_caminho_ideal # Retorna o próximo melhor passo (produto, preco).
+            
+            return None # Não há um próximo passo válido.
+            
+    # Atualiza a interface do robo (carrinho, total, saldo).
+    def atualizar_display_robo(self):
+        self.display_carrinho_robo.delete(0, tk.END)
+        for produto, preco in self.carrinho_robo:
+            self.display_carrinho_robo.insert(tk.END, f"{produto} - R$ {preco:.2f}")
+            
+        self.label_total_robo.config(text=f"💰 TOTAL ROBO: R$ {self.total_robo:.2f}")
+        saldo_restante_robo = self.valor_alvo - self.total_robo
+        self.label_saldo_restante_robo.config(text=f"SALDO: R$ {saldo_restante_robo:.2f}")
 
     # Lógica para finalizar a rodada e determinar o vencedor.
     def finalizar_compra(self):
@@ -847,29 +908,29 @@ class JogoSupermercado:
         
         # Calcula a diferença de cada jogador para o valor-alvo.
         diff_jogador = abs(self.valor_alvo - self.total_jogador)
-        diff_agente = abs(self.valor_alvo - self.total_agente)
+        diff_robo = abs(self.valor_alvo - self.total_robo)
         
         # Determina o vencedor.
         vencedor = "EMPATE"
-        if diff_jogador < diff_agente:
+        if diff_jogador < diff_robo:
             vencedor = "JOGADOR"
-        elif diff_agente < diff_jogador:
-            vencedor = "AGENTE"
+        elif diff_robo < diff_jogador:
+            vencedor = "ROBO"
         else: # Em caso de empate na diferença, vence quem comprou menos itens.
-            if len(self.carrinho_jogador) < len(self.carrinho_agente):
+            if len(self.carrinho_jogador) < len(self.carrinho_robo):
                 vencedor = "JOGADOR"
-            elif len(self.carrinho_agente) < len(self.carrinho_jogador):
-                vencedor = "AGENTE"
+            elif len(self.carrinho_robo) < len(self.carrinho_jogador):
+                vencedor = "ROBO"
         
         # Monta a mensagem de resultado.
         msg_resultado = f"🎯 VALOR-ALVO: R$ {self.valor_alvo:.2f}\n\n"
         msg_resultado += f"👤 JOGADOR: R$ {self.total_jogador:.2f} ({len(self.carrinho_jogador)} itens)\n"
-        msg_resultado += f"🤖 AGENTE: R$ {self.total_agente:.2f} ({len(self.carrinho_agente)} itens)\n\n"
+        msg_resultado += f"🤖 ROBO: R$ {self.total_robo:.2f} ({len(self.carrinho_robo)} itens)\n\n"
         
         if vencedor == "JOGADOR":
             msg_resultado += "🎉 VOCÊ VENCEU! Parabéns!"
-        elif vencedor == "AGENTE":
-            msg_resultado += "🤖 O AGENTE VENCEU! Tente novamente!"
+        elif vencedor == "ROBO":
+            msg_resultado += "🤖 O ROBO VENCEU! Tente novamente!"
         else:
             msg_resultado += "⚖️ EMPATE! Ambos foram igualmente bons!"
         
